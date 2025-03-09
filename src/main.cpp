@@ -27,40 +27,21 @@ void setup() {
         Serial.write(sim7080g.read());
     }
 
-    // Send SMS
-    // sim7080g.println("AT+CMGF=1"); // Set SMS to text mode
-    // delay(1000);
-    // sim7080g.println(
-    //     "AT+CMGS=\"+1234567890\""); // Replace with recipient's number
-    // delay(1000);
-    // sim7080g.print("Hello from SIM7080G");
-    // sim7080g.write(26); // CTRL+Z to send SMS
-    // delay(5000);
-}
-
-void loop() {
-    // Handle incoming data or other functionalities
-    // Test AT command
-    sim7080g.println("AT");
-    Serial.println("sent AT command to sim7080g");
-    delay(1000);
-    while (sim7080g.available()) {
-        Serial.write(sim7080g.read());
-    }
-    sim7080g.println("AT");
-    Serial.println("sent AT command to sim7080g");
-    delay(1000);
-    while (sim7080g.available()) {
-        Serial.write(sim7080g.read());
-    }
     sim7080g.println("AT+CEREG?");
     Serial.println("sent AT+CEREG? command to sim7080g");
     delay(1000);
     while (sim7080g.available()) {
         Serial.write(sim7080g.read());
     }
+
     sim7080g.println("AT+CPIN?");
     Serial.println("sent AT+CPIN? command to sim7080g");
+    delay(1000);
+    while (sim7080g.available()) {
+        Serial.write(sim7080g.read());
+    }
+    sim7080g.println("AT+CSQ?");
+    Serial.println("sent AT+CSQ? command to sim7080g");
     delay(1000);
     while (sim7080g.available()) {
         Serial.write(sim7080g.read());
@@ -118,6 +99,11 @@ void loop() {
     while (sim7080g.available()) {
         Serial.write(sim7080g.read());
     }
+}
+
+void loop() {
+    // Handle incoming data or other functionalities
+    // Test AT command
 
     // sim7080g.println("AT+SHREQ=\"example.com\", 1");
     // Serial.println("sent AT+SHREQ command to sim7080g");
@@ -135,17 +121,17 @@ void loop() {
         Serial.write(sim7080g.read());
     }
 
-    sim7080g.println("AT+SHREAD=0, 615");
-    Serial.println("sent AT+SHREAD command to sim7080g");
-    delay(1000);
-    while (sim7080g.available()) {
-        Serial.write(sim7080g.read());
-    }
+    // sim7080g.println("AT+SHREAD=0, 615");
+    // Serial.println("sent AT+SHREAD command to sim7080g");
+    // delay(1000);
+    // while (sim7080g.available()) {
+    //     Serial.write(sim7080g.read());
+    // }
 
-    sim7080g.println("AT+SHDISC");
-    Serial.println("sent AT+SHDISC command to sim7080g");
-    delay(1000);
-    while (sim7080g.available()) {
-        Serial.write(sim7080g.read());
-    }
+    // sim7080g.println("AT+SHDISC");
+    // Serial.println("sent AT+SHDISC command to sim7080g");
+    // delay(1000);
+    // while (sim7080g.available()) {
+    //     Serial.write(sim7080g.read());
+    // }
 }
