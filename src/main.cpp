@@ -2,23 +2,27 @@
 #include <HardwareSerial.h>
 
 HardwareSerial sim7080g(1);
-#define PWRKEY 4
+#define PWRKEY 5
 #define RX_PIN 6
 #define TX_PIN 7
 
 void power_on_sim7080g() {
-    pinMode(PWRKEY, OUTPUT);
     digitalWrite(PWRKEY, LOW);
     delay(1000); // Hold PWRKEY low for 1 second
     digitalWrite(PWRKEY, HIGH);
     delay(5000); // Wait for initialization
+    sim7080g.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN);
+    delay(1000);
+    sim7080g.println("AT+CPSMS=0");
+    Serial.println("sent AT+CPSMS=0 command to sim7080g");
+    delay(1000);
+    while (sim7080g.available()) {
+        Serial.write(sim7080g.read());
+    }
 }
 
-void setup() {
-    Serial.begin(115200);
-    sim7080g.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN); // RX, TX
+void use_sim7080g() {
     power_on_sim7080g();
-
     // Test AT command
     sim7080g.println("AT");
     Serial.println("sent AT command to sim7080g");
@@ -101,7 +105,37 @@ void setup() {
     }
 }
 
+void setup() {
+    Serial.begin(115200);
+    sim7080g.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN); // RX, TX
+    Serial.println("Starting...");
+    pinMode(PWRKEY, OUTPUT);
+    // power_on_sim7080g();
+}
+
+const int WAKEUP_TIME_SECONDS = 15;
+
 void loop() {
+    Serial.println("wakeup");
+    use_sim7080g();
+    for (int i = 0; i < 10; i++) {
+        sim7080g.println("AT+SHREQ=\"/tunnel_gting/lte_test?num=1\", 2");
+        Serial.println("sent AT+SHREQ command to sim7080g");
+        delay(1000);
+        while (sim7080g.available()) {
+            Serial.write(sim7080g.read());
+        }
+    }
+    sim7080g.println("AT+CPSMS=1");
+    Serial.println("sent low power mode command to sim7080g");
+    delay(1000);
+    while (sim7080g.available()) {
+        Serial.write(sim7080g.read());
+    }
+    esp_sleep_enable_timer_wakeup(WAKEUP_TIME_SECONDS * 1000000);
+    Serial.println("sleeping...");
+    esp_deep_sleep_start();
+
     // Handle incoming data or other functionalities
     // Test AT command
 
@@ -113,13 +147,6 @@ void loop() {
     // }
 
     // AT+SHREQ="/request?deviceId=UCFLVA28",3
-
-    sim7080g.println("AT+SHREQ=\"/tunnel_gting/lte_test?num=1\", 2");
-    Serial.println("sent AT+SHREQ command to sim7080g");
-    delay(1000);
-    while (sim7080g.available()) {
-        Serial.write(sim7080g.read());
-    }
 
     // sim7080g.println("AT+SHREAD=0, 615");
     // Serial.println("sent AT+SHREAD command to sim7080g");
